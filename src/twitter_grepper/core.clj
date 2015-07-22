@@ -33,7 +33,7 @@
 (defn dump-tweets
   "Dump a list of tweets with the given dump-fn"
   [tweets dump-fn]
-  (map (fn [tweet] (dump-fn tweet)) tweets))
+  (pmap (fn [tweet] (dump-fn tweet)) tweets))
 
 (defn -main
   "Print a filtered list of all tweets from my startpage"
@@ -47,8 +47,13 @@
 
   (def unfiltered-tweets (get-tweets (:username config) creds))
 
-  (for [keyword (:keywords config)] 
-    (dump-tweets 
-     (filter-tweets unfiltered-tweets keyword) 
-     print-tweet))
+  (pmap (fn [keyword] (dump-tweets 
+                       (filter-tweets unfiltered-tweets keyword) 
+                       print-tweet))
+        (:keywords config))
+
+  ;; (for [keyword (:keywords config)] 
+  ;;   (dump-tweets 
+  ;;    (filter-tweets unfiltered-tweets keyword) 
+  ;;    print-tweet))
 )
